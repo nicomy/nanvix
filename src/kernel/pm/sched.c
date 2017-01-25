@@ -59,6 +59,18 @@ PUBLIC void resume(struct process *proc)
 		sched(proc);
 }
 
+// /**
+//  * @brief compute counter priority based.
+//  */
+// PUBLIC int prio(struct process *p ){
+// 	return (p->counter * ((-p->priority+100)/10 ) + ((-p->nice+20)/10) );
+// }
+
+PUBLIC int prio(struct process *p ){
+	return (p->counter * (((-p->priority-p->nice)+100)/10 ) );
+}
+
+
 /**
  * @brief Yields the processor.
  */
@@ -66,6 +78,7 @@ PUBLIC void yield(void)
 {
 	struct process *p;    /* Working process.     */
 	struct process *next; /* Next process to run. */
+	
 
 	/* Re-schedule process for execution. */
 	if (curr_proc->state == PROC_RUNNING)
@@ -98,7 +111,8 @@ PUBLIC void yield(void)
 		 * Process with higher
 		 * waiting time found.
 		 */
-		if (p->counter > next->counter)
+		// if (p->counter > next->counter)
+		if(prio(p)>prio(next))
 		{
 			next->counter++;
 			next = p;
@@ -111,6 +125,9 @@ PUBLIC void yield(void)
 		else
 			p->counter++;
 	}
+
+
+
 	
 	/* Switch to next process. */
 	next->priority = PRIO_USER;
