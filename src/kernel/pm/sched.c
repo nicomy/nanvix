@@ -23,6 +23,10 @@
 #include <nanvix/hal.h>
 #include <nanvix/pm.h>
 #include <signal.h>
+#include <time.h>
+#include <stdlib.h>
+
+srand(time(NULL));
 
 /**
  * @brief Schedules a process to execution.
@@ -59,17 +63,6 @@ PUBLIC void resume(struct process *proc)
 		sched(proc);
 }
 
-// /**
-//  * @brief compute counter priority based.
-//  */
-// PUBLIC int prio(struct process *p ){
-// 	return (p->counter * ((-p->priority+100)/10 ) + ((-p->nice+20)/10) );
-// }
-
-PUBLIC int prio(struct process *p ){
-	return (p->counter * (((-p->priority-p->nice)+100)/10 ) );
-}
-
 
 /**
  * @brief Yields the processor.
@@ -79,7 +72,7 @@ PUBLIC void yield(void)
 	struct process *p;    /* Working process.     */
 	struct process *next; /* Next process to run. */
 	
-
+	int r = rand() % nprocs ;
 	/* Re-schedule process for execution. */
 	if (curr_proc->state == PROC_RUNNING)
 		sched(curr_proc);
@@ -99,32 +92,40 @@ PUBLIC void yield(void)
 			p->alarm = 0, sndsig(p, SIGALRM);
 	}
 
+
 	/* Choose a process to run next. */
 	next = IDLE;
-	for (p = FIRST_PROC; p <= LAST_PROC; p++)
-	{
-		/* Skip non-ready process. */
-		if (p->state != PROC_READY)
-			continue;
-		
-		/*
-		 * Process with higher
-		 * waiting time found.
-		 */
-		// if (p->counter > next->counter)
-		if(prio(p)>prio(next))
-		{
-			next->counter++;
-			next = p;
-		}
-			
-		/*
-		 * Increment waiting
-		 * time of process.
-		 */
-		else
-			p->counter++;
+	int i= 0  ;
+	p = FIRST_PROC ; 
+	for (i = 0 ; i < r ; i ++ ){
+
+		p = p->next ; 
 	}
+	next = p ; 
+	// for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	// {
+	// 	/* Skip non-ready process. */
+	// 	if (p->state != PROC_READY)
+	// 		continue;
+		
+	// 	/*
+	// 	 * Process with higher
+	// 	 * waiting time found.
+	// 	 */
+	// 	// if (p->counter > next->counter)
+	// 	if(prio(p)>prio(next))
+	// 	{
+	// 		next->counter++;
+	// 		next = p;
+	// 	}
+			
+	// 	/*
+	// 	 * Increment waiting
+	// 	 * time of process.
+	// 	 */
+	// 	else
+	// 		p->counter++;
+	// }
 
 
 
