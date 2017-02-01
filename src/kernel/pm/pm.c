@@ -31,6 +31,8 @@
 #include <signal.h>
 #include <limits.h>
 
+
+
 /**
  * @brief Idle process page directory.
  */
@@ -71,9 +73,9 @@ PUBLIC unsigned nprocs = 0;
  */
 PUBLIC void pm_init(void)
 {	
+
 	int i;             /* Loop index.      */
 	struct process *p; /* Working process. */
-	
 	/* Initialize the process table. */
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 		p->flags = 0, p->state = PROC_DEAD;

@@ -23,10 +23,10 @@
 #include <nanvix/hal.h>
 #include <nanvix/pm.h>
 #include <signal.h>
-#include <time.h>
-#include <stdlib.h>
 
-srand(time(NULL));
+
+
+
 
 /**
  * @brief Schedules a process to execution.
@@ -63,6 +63,30 @@ PUBLIC void resume(struct process *proc)
 		sched(proc);
 }
 
+/**
+ * @brief Next pseudo-random number if the sequence.
+ */
+unsigned _next = 1;
+
+/**
+ * @brief Sets seed value for pseudo-random number generator.
+ *
+ * @param seed Pseudo-random number sequence's seed value. 
+ */
+void srand(unsigned seed)
+{
+	_next = seed;
+}
+/**
+ * @brief Generates a pseudo-random number.
+ * 
+ * @returns A pseudo-random integer.
+ */
+int rand(void)
+{
+	_next = (_next * 1103515245) + 12345;
+	return ((_next >> 16) & 0x7fff);
+}
 
 /**
  * @brief Yields the processor.
@@ -72,7 +96,6 @@ PUBLIC void yield(void)
 	struct process *p;    /* Working process.     */
 	struct process *next; /* Next process to run. */
 	
-	int r = rand() % nprocs ;
 	/* Re-schedule process for execution. */
 	if (curr_proc->state == PROC_RUNNING)
 		sched(curr_proc);
@@ -96,9 +119,9 @@ PUBLIC void yield(void)
 	/* Choose a process to run next. */
 	next = IDLE;
 	int i= 0  ;
+	int r = rand() % nprocs ;
 	p = FIRST_PROC ; 
 	for (i = 0 ; i < r ; i ++ ){
-
 		p = p->next ; 
 	}
 	next = p ; 
