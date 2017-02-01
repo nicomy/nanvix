@@ -1,92 +1,139 @@
+/*
+ * Copyright(C) 2011-2016 Pedro H. Penna   <pedrohenriquepenna@gmail.com>
+ *              2015-2016 Davidson Francis <davidsondfgl@hotmail.com>
+ *
+ * This file is part of Nanvix.
+ *
+ * Nanvix is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Nanvix is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Nanvix. If not, see <http://www.gnu.org/licenses/>.
+ */
 
-Skip to content
-This repository
+#include <nanvix/clock.h>
+#include <nanvix/const.h>
+#include <nanvix/hal.h>
+#include <nanvix/pm.h>
+#include <signal.h>
 
-    Pull requests
-    Issues
-    Gist
+/**
+ * @brief Schedules a process to execution.
+ * 
+ * @param proc Process to be scheduled.
+ */
+PUBLIC void sched(struct process *proc)
+{
+	proc->state = PROC_READY;
+	proc->counter = 0;
+}
 
-    @nicomy
+/**
+ * @brief Stops the current running process.
+ */
+PUBLIC void stop(void)
+{
+	curr_proc->state = PROC_STOPPED;
+	sndsig(curr_proc->father, SIGCHLD);
+	yield();
+}
 
-1
-0
+/**
+ * @brief Resumes a process.
+ * 
+ * @param proc Process to be resumed.
+ * 
+ * @note The process must stopped to be resumed.
+ */
+PUBLIC void resume(struct process *proc)
+{	
+	/* Resume only if process has stopped. */
+	if (proc->state == PROC_STOPPED)
+		sched(proc);
+}
 
-    17
+// /**
+//  * @brief compute counter priority based.
+//  */
+// PUBLIC int prio(struct process *p ){
+// 	return (p->counter * ((-p->priority+100)/10 ) + ((-p->nice+20)/10) );
+// }
 
-nicomy/nanvix forked from ppenna/nanvix
-Code
-Pull requests 0
-Projects 0
-Pulse
-Graphs
-Settings
+PUBLIC int prio(struct process *p ){
+	return (p->counter * (((-p->priority-p->nice)+100)/10 ) );
+}
 
-sched avec priority
 
-    random 
+/**
+ * @brief Yields the processor.
+ */
+PUBLIC void yield(void)
+{
+	struct process *p;    /* Working process.     */
+	struct process *next; /* Next process to run. */
+	
 
-1 parent 4182832 commit a515e878f83fe6603362feb9700681c1ceaa0409 @nicomy nicomy committed 7 days ago
-Showing
-with 18 additions and 1 deletion.
-19 src/kernel/pm/sched.c
-@@ -59,13 +59,26 @@ PUBLIC void resume(struct process *proc)
- 		sched(proc);
- }
- 
-+// /**
-+//  * @brief compute counter priority based.
-+//  */
-+// PUBLIC int prio(struct process *p ){
-+// 	return (p->counter * ((-p->priority+100)/10 ) + ((-p->nice+20)/10) );
-+// }
-+
-+PUBLIC int prio(struct process *p ){
-+	return (p->counter * (((-p->priority-p->nice)+100)/10 ) );
-+}
-+
-+
- /**
-  * @brief Yields the processor.
-  */
- PUBLIC void yield(void)
- {
- 	struct process *p;    /* Working process.     */
- 	struct process *next; /* Next process to run. */
-+	
- 
- 	/* Re-schedule process for execution. */
- 	if (curr_proc->state == PROC_RUNNING)
-@@ -98,7 +111,8 @@ PUBLIC void yield(void)
- 		 * Process with higher
- 		 * waiting time found.
- 		 */
--		if (p->counter > next->counter)
-+		// if (p->counter > next->counter)
-+		if(prio(p)>prio(next))
- 		{
- 			next->counter++;
- 			next = p;
-@@ -111,6 +125,9 @@ PUBLIC void yield(void)
- 		else
- 			p->counter++;
- 	}
-+
-+
-+
- 	
- 	/* Switch to next process. */
- 	next->priority = PRIO_USER;
-0 comments on commit a515e87
-@nicomy
+	/* Re-schedule process for execution. */
+	if (curr_proc->state == PROC_RUNNING)
+		sched(curr_proc);
 
-Attach files by dragging & dropping,
+	/* Remember this process. */
+	last_proc = curr_proc;
 
-, or pasting from the clipboard.
-Styling with Markdown is supported
+	/* Check alarm. */
+	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	{
+		/* Skip invalid processes. */
+		if (!IS_VALID(p))
+			continue;
+		
+		/* Alarm has expired. */
+		if ((p->alarm) && (p->alarm < ticks))
+			p->alarm = 0, sndsig(p, SIGALRM);
+	}
 
-You’re receiving notifications because you’re subscribed to this repository.
+	/* Choose a process to run next. */
+	next = IDLE;
+	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	{
+		/* Skip non-ready process. */
+		if (p->state != PROC_READY)
+			continue;
+		
+		/*
+		 * Process with higher
+		 * waiting time found.
+		 */
+		// if (p->counter > next->counter)
+		if(prio(p)>prio(next))
+		{
+			next->counter++;
+			next = p;
+		}
+			
+		/*
+		 * Increment waiting
+		 * time of process.
+		 */
+		else
+			p->counter++;
+	}
 
-    Contact GitHub API Training Shop Blog About 
 
-    © 2017 GitHub, Inc. Terms Privacy Security Status Help 
+
+	
+	/* Switch to next process. */
+	next->priority = PRIO_USER;
+	next->state = PROC_RUNNING;
+	next->counter = PROC_QUANTUM;
+	switch_to(next);
+}
+
 
