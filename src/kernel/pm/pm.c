@@ -114,7 +114,8 @@ PUBLIC void pm_init(void)
 	IDLE->cutime = 0;
 	IDLE->cktime = 0;
 	IDLE->state = PROC_RUNNING;
-	IDLE->counter = PROC_QUANTUM;
+	//IDLE->counter = PROC_QUANTUM;
+	IDLE->counter = INT_MAX;
 	IDLE->priority = PRIO_USER;
 	IDLE->nice = NZERO;
 	IDLE->alarm = 0;

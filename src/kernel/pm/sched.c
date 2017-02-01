@@ -32,7 +32,6 @@
 PUBLIC void sched(struct process *proc)
 {
 	proc->state = PROC_READY;
-	proc->counter = 0;
 }
 
 /**
@@ -60,14 +59,30 @@ PUBLIC void resume(struct process *proc)
 }
 
 // /**
-//  * @brief compute counter priority based.
+//  * @brief fair-share based.
 //  */
 // PUBLIC int prio(struct process *p ){
 // 	return (p->counter * ((-p->priority+100)/10 ) + ((-p->nice+20)/10) );
 // }
 
+/*
 PUBLIC int prio(struct process *p ){
 	return (p->counter * (((-p->priority-p->nice)+100)/10 ) );
+}
+*/
+
+PUBLIC void reduc_counters(void){
+	
+	struct process *p;    /* Working process.     */
+
+	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	{
+		if(p->counter > (INT_MAX/2)){
+			p->counter = (p->counter - (INT_MAX / 2));
+		} else {
+			p->counter = (INT_MAX / 2);
+		}
+	}
 }
 
 
@@ -101,6 +116,10 @@ PUBLIC void yield(void)
 
 	/* Choose a process to run next. */
 	next = IDLE;
+
+	/* To place into initialisation place. */
+	//IDLE->counter = INT_MAX;
+
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	{
 		/* Skip non-ready process. */
@@ -112,9 +131,9 @@ PUBLIC void yield(void)
 		 * waiting time found.
 		 */
 		// if (p->counter > next->counter)
-		if(prio(p)>prio(next))
+		if(p->counter < next->counter)
 		{
-			next->counter++;
+			//next->counter++;
 			next = p;
 		}
 			
@@ -122,17 +141,20 @@ PUBLIC void yield(void)
 		 * Increment waiting
 		 * time of process.
 		 */
-		else
-			p->counter++;
+		//else
+		//	p->counter++;
 	}
-
-
-
 	
 	/* Switch to next process. */
 	next->priority = PRIO_USER;
 	next->state = PROC_RUNNING;
-	next->counter = PROC_QUANTUM;
+
+	if(next != IDLE){
+		if(next->counter >= INT_MAX - PROC_QUANTUM){
+			reduc_counters();
+		}
+		next->counter = next->counter+PROC_QUANTUM;
+	}
 	switch_to(next);
 }
 
