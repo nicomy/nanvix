@@ -40,6 +40,7 @@ doc/*-kernel
 *.out
 *.dvi
 bx_enh_dbg.ini
+
 # Exceptions.
 !doc/paper/img/*.pdf
 !doc/paper/*.pdf
