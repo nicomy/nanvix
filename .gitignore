@@ -39,6 +39,8 @@ doc/*-kernel
 *.fdb_latexmk
 *.out
 *.dvi
+bx_enh_dbg.ini
+
 
 # Exceptions.
 !doc/paper/img/*.pdf
