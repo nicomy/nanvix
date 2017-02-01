@@ -95,7 +95,7 @@ PUBLIC void yield(void)
 {
 	struct process *p;    /* Working process.     */
 	struct process *next; /* Next process to run. */
-	
+
 	/* Re-schedule process for execution. */
 	if (curr_proc->state == PROC_RUNNING)
 		sched(curr_proc);
@@ -113,18 +113,45 @@ PUBLIC void yield(void)
 		/* Alarm has expired. */
 		if ((p->alarm) && (p->alarm < ticks))
 			p->alarm = 0, sndsig(p, SIGALRM);
+
+
 	}
 
 
 	/* Choose a process to run next. */
 	next = IDLE;
-	int i= 0  ;
+	// int i= 0  ;
 	int r = rand() % nprocs ;
+
 	p = FIRST_PROC ; 
-	for (i = 0 ; i < r ; i ++ ){
-		p = p->next ; 
+	// for (i = 0 ; i < r ; i ++ ){
+	// 	if(p == LAST_PROC ){
+	// 		p= FIRST_PROC ;
+
+	// 	}
+	// 	else 
+	// 		p++ ;
+	// }
+
+	p= p + r ; 
+	
+
+	// /* Skip non-ready process. */
+	// while (p->state != PROC_READY){
+	// 	if(p == LAST_PROC ){
+	// 		p= FIRST_PROC ;
+	// 	}
+	// 	else{
+	// 		p++ ;
+	// 	}
+	// }
+	// next = p ; 
+	
+	if (p->state == PROC_READY){
+		next = p ; 
 	}
-	next = p ; 
+
+
 	// for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	// {
 	// 	/* Skip non-ready process. */
