@@ -88,6 +88,9 @@ int rand(void)
 	return ((_next >> 16) & 0x7fff);
 }
 
+int tabTicket[PROC_MAX] ;
+
+
 /**
  * @brief Yields the processor.
  */
@@ -95,6 +98,9 @@ PUBLIC void yield(void)
 {
 	struct process *p;    /* Working process.     */
 	struct process *next; /* Next process to run. */
+	int nbTic = 0 ; 
+	tabTicket[0] = 0 ; 
+	int i = 1 ; 
 
 	/* Re-schedule process for execution. */
 	if (curr_proc->state == PROC_RUNNING)
@@ -107,9 +113,16 @@ PUBLIC void yield(void)
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	{
 		/* Skip invalid processes. */
-		if (!IS_VALID(p))
+		if (!IS_VALID(p)){
+			tabTicket[i] = 0 ; 
+			i ++ ;
 			continue;
+		}
 		
+		nbTic += p-> counter - PROC_QUANTUM ; 
+		tabTicket[i]= p->counter - PROC_QUANTUM ;
+		i++ ; 
+
 		/* Alarm has expired. */
 		if ((p->alarm) && (p->alarm < ticks))
 			p->alarm = 0, sndsig(p, SIGALRM);
@@ -118,71 +131,56 @@ PUBLIC void yield(void)
 	}
 
 
+
 	/* Choose a process to run next. */
 	next = IDLE;
-	// int i= 0  ;
-	int r = rand() % nprocs ;
-
+	i = 1 ; 
+	int indice_next = 0 ; 
+	int tmp = 0 ; 
+	
+	int r = 0 ; 
+	if(nbTic !=  0 ){
+		r= rand() % nbTic ;
+	}	
 	p = FIRST_PROC ; 
-	// for (i = 0 ; i < r ; i ++ ){
-	// 	if(p == LAST_PROC ){
-	// 		p= FIRST_PROC ;
+	indice_next = 1;
 
-	// 	}
-	// 	else 
-	// 		p++ ;
-	// }
+	for (p = FIRST_PROC; p <= LAST_PROC; p++)
+	{
+		/* Skip non-ready process. */
+		if (p->state != PROC_READY){
+			i++ ; 
+			continue;
+		}
+		
+		tmp = tmp + tabTicket[i] ;
 
-	p= p + r ; 
-	
-
-	// /* Skip non-ready process. */
-	// while (p->state != PROC_READY){
-	// 	if(p == LAST_PROC ){
-	// 		p= FIRST_PROC ;
-	// 	}
-	// 	else{
-	// 		p++ ;
-	// 	}
-	// }
-	// next = p ; 
-	
-	if (p->state == PROC_READY){
-		next = p ; 
+		// if (p->counter > next->counter)
+		if(tmp >= r )
+		{
+			next->counter++;
+			next = p;
+			indice_next = i ; 
+		}
+		/*
+		 * Increment waiting
+		 * time of process.
+		 */
+		else
+			p->counter++;
+		
+		i++ ; 
 	}
 
 
-	// for (p = FIRST_PROC; p <= LAST_PROC; p++)
-	// {
-	// 	/* Skip non-ready process. */
-	// 	if (p->state != PROC_READY)
-	// 		continue;
-		
-	// 	/*
-	// 	 * Process with higher
-	// 	 * waiting time found.
-	// 	 */
-	// 	// if (p->counter > next->counter)
-	// 	if(prio(p)>prio(next))
-	// 	{
-	// 		next->counter++;
-	// 		next = p;
-	// 	}
-			
-	// 	/*
-	// 	 * Increment waiting
-	// 	 * time of process.
-	// 	 */
-	// 	else
-	// 		p->counter++;
+	// if (r==0 ){
+	// 	next = IDLE ; 
 	// }
-
-
-
 	
 	/* Switch to next process. */
 	next->priority = PRIO_USER;
 	next->state = PROC_RUNNING;
 	next->counter = PROC_QUANTUM;
+	tabTicket[indice_next] = 0 ; 
 	switch_to(next);
 }
