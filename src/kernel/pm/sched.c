@@ -77,10 +77,10 @@ PUBLIC void reduc_counters(void){
 
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
 	{
-		if(p->counter > (INT_MAX/2)){
+		if(p->counter >= (INT_MAX/2)+PROC_QUANTUM){
 			p->counter = (p->counter - (INT_MAX / 2));
 		} else {
-			p->counter = (INT_MAX / 2);
+			p->counter = PROC_QUANTUM;
 		}
 	}
 }

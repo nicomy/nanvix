@@ -102,9 +102,12 @@ void _exit(int status)
  */
 PRIVATE void init(void)
 {
+	
+	IDLE->counter = INT_MAX;
+
 	const char *argv[] = { "init", "/etc/inittab", NULL };
 	const char *envp[] = { "PATH=/bin:/sbin", "HOME=/", NULL };
-		
+
 	execve("/sbin/init", argv, envp);
 }
 
