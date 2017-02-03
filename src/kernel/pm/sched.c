@@ -124,58 +124,14 @@ PUBLIC void yield(void)
 	int r = rand() % nprocs ;
 
 	p = FIRST_PROC ; 
-	// for (i = 0 ; i < r ; i ++ ){
-	// 	if(p == LAST_PROC ){
-	// 		p= FIRST_PROC ;
-
-	// 	}
-	// 	else 
-	// 		p++ ;
-	// }
 
 	p= p + r ; 
 	
 
-	// /* Skip non-ready process. */
-	// while (p->state != PROC_READY){
-	// 	if(p == LAST_PROC ){
-	// 		p= FIRST_PROC ;
-	// 	}
-	// 	else{
-	// 		p++ ;
-	// 	}
-	// }
-	// next = p ; 
-	
 	if (p->state == PROC_READY){
 		next = p ; 
 	}
 
-
-	// for (p = FIRST_PROC; p <= LAST_PROC; p++)
-	// {
-	// 	/* Skip non-ready process. */
-	// 	if (p->state != PROC_READY)
-	// 		continue;
-		
-	// 	/*
-	// 	 * Process with higher
-	// 	 * waiting time found.
-	// 	 */
-	// 	// if (p->counter > next->counter)
-	// 	if(prio(p)>prio(next))
-	// 	{
-	// 		next->counter++;
-	// 		next = p;
-	// 	}
-			
-	// 	/*
-	// 	 * Increment waiting
-	// 	 * time of process.
-	// 	 */
-	// 	else
-	// 		p->counter++;
-	// }
 
 
 
