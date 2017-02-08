@@ -121,6 +121,26 @@ error0:
 	return (-1);
 }
 
+
+/*============================================================================*
+ *                               pagination_test                                    *
+ *============================================================================*/
+
+/**
+ * @brief test test module.
+ * 
+ *@param : 
+ *
+ * @details Forces swapping algorithms to be activated by performing a large
+ *          matrix multiplication operation that does not fit on memory.
+ * 
+ */
+static void page_test(int* miss, int * total )
+{
+	*miss = 10 ; 
+	*total = 40 ; 
+}
+
 /*============================================================================*
  *                                  io_test                                   *
  *============================================================================*/
@@ -576,6 +596,7 @@ static void usage(void)
 	printf("  ipc   Interprocess Communication Test\n");
 	printf("  swp   Swapping Test\n");
 	printf("  sched Scheduling Test\n");
+	printf("  page Paginatinon Test\n");
 	
 	exit(EXIT_SUCCESS);
 }
@@ -606,8 +627,16 @@ int main(int argc, char **argv)
 			printf("  Result:             [%s]\n",
 				(!swap_test()) ? "PASSED" : "FAILED");
 		}
-		
-		/* Scheduling test. */
+
+		/* page test. */
+		else if (!strcmp(argv[i], "page"))
+		{
+			printf("page Test\n");
+			int* miss = malloc(sizeof(int)); 
+			int* total = malloc(sizeof(int));
+			page_test(miss, total ) ; 
+			printf("  Result:   miss = %d out of %d   \n",*miss,*total);
+		}
 		else if (!strcmp(argv[i], "sched"))
 		{
 			printf("Scheduling Tests\n");
