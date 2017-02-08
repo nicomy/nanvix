@@ -133,12 +133,83 @@ error0:
  *
  * @details Forces swapping algorithms to be activated by performing a large
  *          matrix multiplication operation that does not fit on memory.
- * 
+ *
+ * @returns Zero if passed on test, and non-zero otherwise.
  */
-static void page_test(int* miss, int * total )
+static int page_test(int* miss, int * total )
 {
-	*miss = 10 ; 
-	*total = 40 ; 
+	*miss = 0 ; 
+	*total = 0 ; 
+
+
+	#define N 1280
+	int *a, *b, *c;
+	clock_t t0, t1;
+	struct tms timing;
+
+	/* Allocate matrices. */
+	if ((a = malloc(N*N*sizeof(int))) == NULL)
+		goto error0;
+	if ((b = malloc(N*N*sizeof(int))) == NULL)
+		goto error1;
+	if ((c = malloc(N*N*sizeof(int))) == NULL)
+		goto error2;
+		
+	t0 = times(&timing);
+	
+	/* Initialize matrices. */
+	for (int i = 0; i < N*N; i++)
+	{
+		a[i] = 1;
+		b[i] = 1;
+		c[i] = 0;
+	}
+	
+	/* Multiply matrices. */
+	if (flags & (EXTENDED | FULL))
+	{	
+		for (int i = 0; i < N; i++)
+		{
+			for (int j = 0; j < N; j++)
+			{
+					
+				for (int k = 0; k < N; k++)
+					c[i*N + j] += a[i*N + k]*b[k*N + j];
+			}
+		}
+	}
+	
+	/* Check values. */
+	if (flags & FULL)
+	{
+		for (int i = 0; i < N*N; i++)
+		{
+			if (c[i] != N)
+				goto error3;
+		}
+	}
+	
+	/* House keeping. */
+	free(a);
+	free(b);
+	free(c);
+	
+	t1 = times(&timing);
+	
+	/* Print timing statistics. */
+	if (flags & VERBOSE)
+		printf("  Elapsed: %d\n", t1 - t0);
+	
+	return (0);
+
+error3:
+	free(c);
+error2:
+	free(b);
+error1:
+	free(a);
+error0:
+	return (-1);
 }
 
 /*============================================================================*
@@ -596,7 +667,7 @@ static void usage(void)
 	printf("  ipc   Interprocess Communication Test\n");
 	printf("  swp   Swapping Test\n");
 	printf("  sched Scheduling Test\n");
-	printf("  page Paginatinon Test\n");
+	printf("  page  Paginatinon Test\n");
 	
 	exit(EXIT_SUCCESS);
 }
