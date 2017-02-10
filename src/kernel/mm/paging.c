@@ -296,7 +296,7 @@ PRIVATE int allocf(void)
 {
 
 	static int i = 0;   /* Loop index.  */
-	int nbop = 0;
+	//int nbop = 0;
 	struct pte *pg; /* Working page table entry. */
 
 	//#define OLDEST(x, y) (frames[x].age > frames[y].age)
@@ -305,7 +305,7 @@ PRIVATE int allocf(void)
 	//while(nbop < NR_FRAMES+1)
 	while(1)
 	{
-		nbop++;
+		//nbop++;
 		i++;
 		i=i%NR_FRAMES;
 
