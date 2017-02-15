@@ -133,7 +133,7 @@ error0:
  *
  * @details Forces swapping algorithms to be activated by performing a large
  *          matrix multiplication operation that does not fit on memory.
- *
+ *matrix multiplication operation that does not fit on memory.
  * @returns Zero if passed on test, and non-zero otherwise.
  */
 static int page_test(int* miss, int * total )
@@ -202,14 +202,14 @@ static int page_test(int* miss, int * total )
 	
 	return (0);
 
-error3:
-	free(c);
-error2:
-	free(b);
-error1:
-	free(a);
-error0:
-	return (-1);
+	error3:
+		free(c);
+	error2:
+		free(b);
+	error1:
+		free(a);
+	error0:
+		return (-1);
 }
 
 /*============================================================================*
@@ -705,8 +705,12 @@ int main(int argc, char **argv)
 			printf("page Test\n");
 			int* miss = malloc(sizeof(int)); 
 			int* total = malloc(sizeof(int));
-			page_test(miss, total ) ; 
-			printf("  Result:   miss = %d out of %d   \n",*miss,*total);
+			if(!page_test(miss, total ))  {
+				printf("  Result:   miss = %d out of %d   \n",*miss,*total);
+			}
+			else {
+				printf(" Result : FAILED")
+			}
 		}
 		else if (!strcmp(argv[i], "sched"))
 		{
