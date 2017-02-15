@@ -279,7 +279,7 @@ PUBLIC void putkpg(void *kpg)
 PRIVATE struct
 {
 	unsigned count; /**< Reference count.     */
-	char age;   /**< Age.                 */
+	char ref;   /**< Age.                 */
 	pid_t owner;    /**< Page owner.          */
 	addr_t addr;    /**< Address of the page. */
 } frames[NR_FRAMES] = {{0, 0, 0, 0},  };
@@ -294,29 +294,33 @@ PRIVATE int allocf(void)
 {
 	int i;      /* Loop index.  */
 	int oldest; /* Oldest page. */
+	struct pte *pg;
 	
-	#define LRU(x, y) (frames[x].age > frames[y].age)
+	#define LRU(x, y) (frames[x].ref > frames[y].ref)
 	
 	/* Search for a free frame. */
 	oldest = -1;
 	for (i = 0; i < NR_FRAMES; i++)
 	{
+
 		/* Found it. */
 		if (frames[i].count == 0)
 			goto found;
-		
+
 		/* Local page replacement policy. */
 		if (frames[i].owner == curr_proc->pid)
 		{
 			/* Skip shared pages. */
 			if (frames[i].count > 1)
 				continue;
+
+			pg = getpte(curr_proc, frames[i])
+			frames[i].ref= (frames[i].ref>>1 | pg->accessed<<7);
 			
 			/* Oldest page found. */
 			if ((oldest < 0) || (LRU(i, oldest)))
 				oldest = i;
 		}
-
 
 	}
 	
@@ -330,7 +334,7 @@ PRIVATE int allocf(void)
 	
 found:		
 
-	frames[i].age = ticks;
+	frames[i].ref = 1<<7;
 	frames[i].count = 1;
 	
 	return (i);
