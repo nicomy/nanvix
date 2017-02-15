@@ -295,6 +295,7 @@ PRIVATE int allocf(void)
 	int i;      /* Loop index.  */
 	int oldest; /* Oldest page. */
 	struct pte *pg;
+	char init = 1;
 	
 	#define LRU(x, y) (frames[x].ref > frames[y].ref)
 	
@@ -314,7 +315,7 @@ PRIVATE int allocf(void)
 			if (frames[i].count > 1)
 				continue;
 
-			pg = getpte(curr_proc, frames[i])
+			pg = getpte(curr_proc, frames[i].addr);
 			frames[i].ref= (frames[i].ref>>1 | pg->accessed<<7);
 			
 			/* Oldest page found. */
@@ -334,7 +335,7 @@ PRIVATE int allocf(void)
 	
 found:		
 
-	frames[i].ref = 1<<7;
+	frames[i].ref = init<<7;
 	frames[i].count = 1;
 	
 	return (i);
