@@ -279,7 +279,7 @@ PUBLIC void putkpg(void *kpg)
 PRIVATE struct
 {
 	unsigned count; /**< Reference count.     */
-	unsigned age;   /**< Age.                 */
+	char age;   /**< Age.                 */
 	pid_t owner;    /**< Page owner.          */
 	addr_t addr;    /**< Address of the page. */
 } frames[NR_FRAMES] = {{0, 0, 0, 0},  };
@@ -295,7 +295,7 @@ PRIVATE int allocf(void)
 	int i;      /* Loop index.  */
 	int oldest; /* Oldest page. */
 	
-	#define OLDEST(x, y) (frames[x].age < frames[y].age)
+	#define LRU(x, y) (frames[x].age > frames[y].age)
 	
 	/* Search for a free frame. */
 	oldest = -1;
@@ -313,9 +313,11 @@ PRIVATE int allocf(void)
 				continue;
 			
 			/* Oldest page found. */
-			if ((oldest < 0) || (OLDEST(i, oldest)))
+			if ((oldest < 0) || (LRU(i, oldest)))
 				oldest = i;
 		}
+
+
 	}
 	
 	/* No frame left. */
