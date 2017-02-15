@@ -83,7 +83,7 @@ static int swap_test(void)
 			{
 					
 				for (int k = 0; k < N; k++)
-					c[j*N + i] += a[j*N + k]*b[k*N + i];
+					c[i*N + j] += a[i*N + k]*b[k*N + j];
 			}
 		}
 	}
