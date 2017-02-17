@@ -279,7 +279,7 @@ PUBLIC void putkpg(void *kpg)
 PRIVATE struct
 {
 	unsigned count; /**< Reference count.     */
-	char ref;   /**< Age.                 */
+	char age;   /**< Age.                 */
 	pid_t owner;    /**< Page owner.          */
 	addr_t addr;    /**< Address of the page. */
 } frames[NR_FRAMES] = {{0, 0, 0, 0},  };
@@ -294,11 +294,12 @@ PRIVATE int allocf(void)
 {
 	int i;      /* Loop index.  */
 	int oldest; /* Oldest page. */
-	struct pte *pg;
-	char init = 1;
+	int ageUp;  /* computed with the value of the clock, if "true" increase process age */ 
 	
-	#define LRU(x, y) (frames[x].ref > frames[y].ref)
+	#define LRU(x, y) (frames[x].age > frames[y].age)
 	
+	ageUp = (ticks%10==0);
+
 	/* Search for a free frame. */
 	oldest = -1;
 	for (i = 0; i < NR_FRAMES; i++)
@@ -315,8 +316,9 @@ PRIVATE int allocf(void)
 			if (frames[i].count > 1)
 				continue;
 
-			pg = getpte(curr_proc, frames[i].addr);
-			frames[i].ref= (frames[i].ref>>1 | pg->accessed<<7);
+			if(ageUp){
+				frames[i].age++;
+			}
 			
 			/* Oldest page found. */
 			if ((oldest < 0) || (LRU(i, oldest)))
@@ -333,9 +335,9 @@ PRIVATE int allocf(void)
 	if (swap_out(curr_proc, frames[i = oldest].addr))
 		return (-1);
 	
-found:		
+found:		  
 
-	frames[i].ref = init<<7;
+	frames[i].age = 0;
 	frames[i].count = 1;
 	
 	return (i);
