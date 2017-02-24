@@ -709,7 +709,7 @@ int main(int argc, char **argv)
 				printf("  Result:   miss = %d out of %d   \n",*miss,*total);
 			}
 			else {
-				printf(" Result : FAILED")
+				printf(" Result : FAILED");
 			}
 		}
 		else if (!strcmp(argv[i], "sched"))

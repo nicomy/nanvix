@@ -25,6 +25,7 @@
 #include <nanvix/pm.h>
 #include <sys/types.h>
 #include <errno.h>
+#include "../mm/mm.h"
 
 /*
  * Creates a new process.
@@ -36,6 +37,15 @@ PUBLIC pid_t sys_fork(void)
 	struct process *proc; /* Process.        */
 	struct region *reg;   /* Memory region.  */
 	struct pregion *preg; /* Process region. */
+
+	#ifdef NB_SWAP
+	number_of_swap =  0 ;
+	number_of_ask = 0 ; 
+	kprintf("nb de swap à l'initiation = %d",number_of_swap);
+	kprintf("nb de demande à l'initiation = %d",number_of_ask);
+		// kprintf("plop ");	
+	#endif /* NB_SWAP */
+	
 
 #if (EDUCATIONAL_KERNEL == 0)
 

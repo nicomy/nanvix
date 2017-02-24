@@ -25,6 +25,7 @@
 #include <nanvix/hal.h>
 #include <nanvix/klib.h>
 #include <nanvix/mm.h>
+#include <nanvix/pm.h>
 #include <nanvix/region.h>
 #include <signal.h>
 #include "mm.h"
@@ -35,6 +36,7 @@
 #if (SWP_SIZE < MEMORY_SIZE)
 	#error "swapping area to small"
 #endif
+
 
 /**
  * @brief Gets a page directory entry of a process.
@@ -62,6 +64,14 @@
 /*============================================================================*
  *                             Swapping System                                *
  *============================================================================*/
+
+/**
+ * @brief count thenumber of swap, only one processus at a time. 
+ */
+#ifdef NB_SWAP
+	PUBLIC int number_of_swap = 0;
+	PUBLIC int number_of_ask = 0 ; 
+#endif 
 
 /**
  * @brief Swap space.
@@ -295,6 +305,11 @@ PRIVATE struct
 PRIVATE int allocf(void)
 {
 
+	#ifdef NB_SWAP
+			number_of_ask ++ ; 	
+	#endif /* NB_SWAP */
+
+	
 	static int i = 0;   /* Loop index.  */
 	//int nbop = 0;
 	struct pte *pg; /* Working page table entry. */
@@ -312,8 +327,9 @@ PRIVATE int allocf(void)
 		pg = getpte(curr_proc, frames[i].addr);
 
 		/* Found it. */
-		if (frames[i].count == 0)
+		if (frames[i].count == 0){
 			goto found;
+		}
 		
 		/* Local page replacement policy. */
 		if (frames[i].owner == curr_proc->pid)
@@ -323,9 +339,16 @@ PRIVATE int allocf(void)
 				continue;
 
 			if(pg->accessed){
-				pg->accessed = 0;			
+				pg->accessed = 0;
 			} else {
 				/* Old page found. */
+				
+				// kprintf("swap");
+
+				#ifdef NB_SWAP
+					number_of_swap ++ ; 	
+				#endif /* NB_SWAP */
+				
 				goto swap;
 			}
 		}

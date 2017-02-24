@@ -74,6 +74,8 @@ PUBLIC void mm_init(void)
 	initreg();
 }
 
+
+
 /**
  * @brief Checks access permissions to a memory area.
  * 

@@ -32,3 +32,18 @@
 	EXTERN void umappgtab(struct process *, addr_t);
 
 #endif /* _MM_H_ */
+
+
+
+#define TEST 
+
+#ifdef TEST
+#ifndef NB_SWAP
+#define NB_SWAP
+	
+	EXTERN int number_of_swap  ;
+	EXTERN int number_of_ask ;  
+
+#endif /* NB_SWAP */
+#endif /* TEST */
+
