@@ -296,9 +296,11 @@ PRIVATE int allocf(void)
 	int oldest; /* Oldest page. */
 	int ageUp;  /* computed with the value of the clock, if "true" increase process age */ 
 	
+	struct pte *pg; /* Working page table entry. */
+
 	#define LRU(x, y) (frames[x].age > frames[y].age)
 	
-	ageUp = (ticks%10==0);
+	ageUp = (ticks%15==0);
 
 	/* Search for a free frame. */
 	oldest = -1;
@@ -317,9 +319,18 @@ PRIVATE int allocf(void)
 				continue;
 
 			if(ageUp){
-				frames[i].age++;
-			}
-			
+
+				pg = getpte(curr_proc, frames[i].addr);
+
+				if(pg->accessed){
+					frames[i].age = 0;
+					pg->accessed = 0;
+				} else {
+					frames[i].age++;
+				}
+
+			}	
+
 			/* Oldest page found. */
 			if ((oldest < 0) || (LRU(i, oldest)))
 				oldest = i;
