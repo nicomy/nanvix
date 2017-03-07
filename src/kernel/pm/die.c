@@ -24,6 +24,7 @@
 #include <nanvix/mm.h>
 #include <nanvix/pm.h>
 #include <signal.h>
+#include "../mm/mm.h"
 
 /**
  * @brief Is the system shutting down?
@@ -39,6 +40,11 @@ PUBLIC void die(int status)
 {
 	struct process *p;
 	
+	#ifdef NB_SWAP
+		kprintf(" nnombre de page swape a la fin   = %d",number_of_swap);	
+		kprintf(" nombre page demande a la fin   = %d",number_of_ask);	
+	#endif /* NB_SWAP */
+
 	/* Shall not occour. */
 	if (curr_proc == IDLE)
 		kpanic("idle process dying");
