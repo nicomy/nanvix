@@ -308,6 +308,10 @@ PRIVATE int allocf(void)
 	
 	struct pte *pg; /* Working page table entry. */
 
+	#ifdef NB_SWAP
+			number_of_ask ++ ; 	
+	#endif /* NB_SWAP */
+
 	#define LRU(x, y) (frames[x].age > frames[y].age)
 	
 	ageUp = (ticks%15==0);
@@ -351,7 +355,11 @@ PRIVATE int allocf(void)
 	/* No frame left. */
 	if (oldest < 0)
 		return (-1);
-	
+
+	#ifdef NB_SWAP
+		number_of_swap ++ ; 	
+	#endif /* NB_SWAP */
+
 	/* Swap page out. */
 	if (swap_out(curr_proc, frames[i = oldest].addr))
 		return (-1);
