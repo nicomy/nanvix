@@ -41,9 +41,8 @@ PUBLIC pid_t sys_fork(void)
 	#ifdef NB_SWAP
 	number_of_swap =  0 ;
 	number_of_ask = 0 ; 
-	kprintf("nb de swap à l'initiation = %d",number_of_swap);
-	kprintf("nb de demande à l'initiation = %d",number_of_ask);
-		// kprintf("plop ");	
+	kprintf("nb de swap a l'initiation = %d",number_of_swap);
+	kprintf("nb de demande a l'initiation = %d",number_of_ask);
 	#endif /* NB_SWAP */
 	
 

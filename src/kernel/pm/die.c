@@ -41,8 +41,8 @@ PUBLIC void die(int status)
 	struct process *p;
 	
 	#ifdef NB_SWAP
-		kprintf(" nnombre de page swapé à la fin   = %d",number_of_swap);	
-		kprintf(" nombre page demandé à la fin   = %d",number_of_ask);	
+		kprintf(" nnombre de page swape a la fin   = %d",number_of_swap);	
+		kprintf(" nombre page demande a la fin   = %d",number_of_ask);	
 	#endif /* NB_SWAP */
 	
 
