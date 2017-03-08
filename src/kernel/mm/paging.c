@@ -64,6 +64,14 @@
  *============================================================================*/
 
 /**
+ * @brief count thenumber of swap, only one processus at a time. 
+ */
+#ifdef NB_SWAP
+	PUBLIC int number_of_swap = 0;
+	PUBLIC int number_of_ask = 0 ; 
+#endif
+
+/**
  * @brief Swap space.
  */
 PRIVATE struct
