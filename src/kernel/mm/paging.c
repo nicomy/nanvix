@@ -300,12 +300,15 @@ PRIVATE struct
  * @returns Upon success, the number of the frame is returned. Upon failure, a
  *          negative number is returned instead.
  */
+
+#define APPROX 15
+
 PRIVATE int allocf(void)
 {
 	int i;      /* Loop index.  */
 	int oldest; /* Oldest page. */
 	int ageUp;  /* computed with the value of the clock, if "true" increase process age */ 
-	
+
 	struct pte *pg; /* Working page table entry. */
 
 	#ifdef NB_SWAP
@@ -314,7 +317,7 @@ PRIVATE int allocf(void)
 
 	#define LRU(x, y) (frames[x].age > frames[y].age)
 	
-	ageUp = (ticks%15==0);
+	ageUp = (ticks%APPROX==0);
 
 	/* Search for a free frame. */
 	oldest = -1;
