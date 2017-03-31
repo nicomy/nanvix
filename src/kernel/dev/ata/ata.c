@@ -664,6 +664,29 @@ PRIVATE int ata_readblk(unsigned minor, buffer_t buf)
 }
 
 /*
+ * Reads a block from a ATA device asynchronously.
+ */
+PRIVATE int ata_readblk_a(unsigned minor, buffer_t buf)
+{
+	struct atadev *dev;
+	
+	/* Invalid minor device. */
+	if (minor >= 4)
+		return (-EINVAL);
+	
+	dev = &ata_devices[minor];
+	
+	/* Device not valid. */
+	if (!(dev->flags & ATADEV_VALID))
+		return (-EINVAL);
+	
+	ata_sched_buffered(minor, buf, 0<<2 ); //| REQ_SYNC);
+	
+	return (0);
+}
+
+
+/*
  * Writes a block to a ATA device.
  */
 PRIVATE int ata_writeblk(unsigned minor, buffer_t buf)
@@ -846,7 +869,8 @@ PRIVATE const struct bdev ata_ops = {
 	&ata_read,    /* read()     */
 	&ata_write,   /* write()    */
 	&ata_readblk, /* readblk()  */
-	&ata_writeblk /* writeblk() */
+	&ata_writeblk, /* writeblk() */
+	&ata_readblk_a /*readblk_a() */
 };
 
 /*
