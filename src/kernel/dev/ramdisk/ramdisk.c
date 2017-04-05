@@ -165,6 +165,7 @@ PRIVATE const struct bdev ramdisk_driver = {
 	&ramdisk_read,     /* read()     */
 	&ramdisk_write,    /* write()    */
 	&ramdisk_readblk,  /* readblk()  */
+	NULL,			   /* readblka() */
 	&ramdisk_writeblk  /* writeblk() */
 };
 

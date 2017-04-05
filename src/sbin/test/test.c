@@ -170,6 +170,65 @@ static int io_test(void)
 }
 
 /*============================================================================*
+ *                                  aread                                   *
+ *============================================================================*/
+
+/**
+ * @brief Asynchronous read testing.
+ * 
+ * @details Reads sequentially the contents of the hard disk
+            asynchronously while anothe process compute some numbers.
+ * 
+ * @returns Zero if passed on test, and non-zero otherwise.
+ */
+static int aread_test(void)
+{
+	int fd;            /* File descriptor.    */
+	struct tms timing; /* Timing information. */
+	int BLOCK_SIZE = (1 << 10);
+	clock_t t0, t1;    /* Elapsed times.      */
+	char *buffer;      /* Buffer.             */
+	int j;
+	
+	/* Allocate buffer. */
+	buffer = malloc(MEMORY_SIZE);
+	if (buffer == NULL)
+		exit(EXIT_FAILURE);
+	
+	/* Open hdd. */
+	fd = open("/dev/hdd", O_RDONLY);
+	if (fd < 0)
+		exit(EXIT_FAILURE);
+	
+	t0 = times(&timing);
+	
+	/* Read hdd. */
+	for(int i; i<3000000;i++){
+		if(read(fd, buffer, BLOCK_SIZE) != BLOCK_SIZE)
+			exit(EXIT_FAILURE);
+
+		for(int i; i<4000000; i++){
+			j=i*2;
+			j=j/4;
+		}
+
+	}
+	
+	t1 = times(&timing);
+	
+	/* House keeping. */
+	free(buffer);
+	close(fd);
+	
+	/* Print timing statistics. */
+	if (flags & VERBOSE)
+		printf("  Elapsed: %d\n", t1 - t0);
+	
+	return (0);
+}
+
+
+/*============================================================================*
  *                                sched_test                                  *
  *============================================================================*/
 
@@ -573,6 +632,7 @@ static void usage(void)
 	printf("Options:\n");
 	printf("  fpu   Floating Point Unit Test\n");
 	printf("  io    I/O Test\n");
+	printf("  aread Asynchronous read Test\n");
 	printf("  ipc   Interprocess Communication Test\n");
 	printf("  swp   Swapping Test\n");
 	printf("  sched Scheduling Test\n");
@@ -597,6 +657,14 @@ int main(int argc, char **argv)
 			printf("I/O Test\n");
 			printf("  Result:             [%s]\n", 
 				(!io_test()) ? "PASSED" : "FAILED");
+		}
+
+		/* Asynchronous read test*/
+		if(!strcmp(argv[i], "aread"))
+		{
+			printf("Asynchronous read test");
+			printf("  Result:            [%s]\n",
+				(!aread_test()) ? "PASSED" : "FAILED");
 		}
 		
 		/* Swapping test. */

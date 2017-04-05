@@ -287,7 +287,7 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 	size_t chunk;        /* Data chunk size.      */
 	block_t blk;         /* Working block number. */
 	struct buffer *bbuf; /* Working block buffer. */
-		
+
 	p = buf;
 	
 	inode_lock(i);
@@ -302,9 +302,9 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 			goto out;
 		
 		bbuf = bread(i->dev, blk);
-			
+
 		blkoff = off % BLOCK_SIZE;
-		
+
 		/* Calculate read chunk size. */
 		chunk = (n < BLOCK_SIZE - blkoff) ? n : BLOCK_SIZE - blkoff;
 		if ((off_t)chunk > i->size - off)
@@ -319,10 +319,27 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 		
 		kmemcpy(p, (char *)bbuf->data + blkoff, chunk);
 		brelse(bbuf);
-		
+
 		n -= chunk;
 		off += chunk;
 		p += chunk;
+
+
+		/* prefetch 1 block */
+		/*
+		for(unsigned int j=0; j<5 && n > j*BLOCK_SIZE; j++){
+
+			blk = block_map(i, off+BLOCK_SIZE*j, 0);
+
+			if(blk == BLOCK_NULL)
+				goto out;
+				
+			bbuf = breada(i->dev,blk);
+
+			brelse(bbuf);
+		}
+		*/
+
 	} while (n > 0);
 
 out:

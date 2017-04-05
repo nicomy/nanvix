@@ -205,7 +205,7 @@ struct request
 };
 
 /*
- * ATA devices.
+ * ATA devices.handler
  */
 PRIVATE struct atadev
 {
@@ -664,6 +664,28 @@ PRIVATE int ata_readblk(unsigned minor, buffer_t buf)
 }
 
 /*
+ * Reads a block from a ATA device.
+ */
+PRIVATE int ata_readblka(unsigned minor, buffer_t buf)
+{
+	struct atadev *dev;
+	
+	/* Invalid minor device. */
+	if (minor >= 4)
+		return (-EINVAL);
+	
+	dev = &ata_devices[minor];
+	
+	/* Device not valid. */
+	if (!(dev->flags & ATADEV_VALID))
+		return (-EINVAL);
+	
+	ata_sched_buffered(minor, buf, REQ_BUF | (0 << 2));
+	
+	return (0);
+}
+
+/*
  * Writes a block to a ATA device.
  */
 PRIVATE int ata_writeblk(unsigned minor, buffer_t buf)
@@ -846,6 +868,7 @@ PRIVATE const struct bdev ata_ops = {
 	&ata_read,    /* read()     */
 	&ata_write,   /* write()    */
 	&ata_readblk, /* readblk()  */
+	&ata_readblka,/* readblka() */
 	&ata_writeblk /* writeblk() */
 };
 
@@ -937,6 +960,19 @@ PRIVATE void ata_handler(int atadevid)
 			buf[i] = word & 0xff;
 			buf[i + 1] = (word >> 8) & 0xff;
 		}
+
+			/* Update buffer flags. */
+
+		if (req->flags & REQ_BUF)
+		{
+			buffer_dirty(req->u.buffered.buf, 0);
+			buffer_valid(req->u.buffered.buf, 1);
+			//brelse(req->u.buffered.buf);
+		}
+		
+		// (req->u.buffered.buf->flags) |= BUFFER_VALID;
+		// (req->u.buffered.buf->flags) &= ~BUFFER_DIRTY;
+		
 	}
 	
 	/* Process next operation. */
