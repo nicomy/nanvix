@@ -188,7 +188,6 @@ static int aread_test(void)
 	int BLOCK_SIZE = (1 << 10);
 	clock_t t0, t1;    /* Elapsed times.      */
 	char *buffer;      /* Buffer.             */
-	int j;
 	
 	/* Allocate buffer. */
 	buffer = malloc(MEMORY_SIZE);
@@ -203,15 +202,18 @@ static int aread_test(void)
 	t0 = times(&timing);
 	
 	/* Read hdd. */
-	for(int i; i<3000000;i++){
+	for(int i=0; i<10000;i++){
 		if(read(fd, buffer, BLOCK_SIZE) != BLOCK_SIZE)
 			exit(EXIT_FAILURE);
 
-		for(int i; i<4000000; i++){
-			j=i*2;
-			j=j/4;
+		int v;
+		for(int j=0;j<10;j++){
+			v=buffer[0];
+			for(int k=j;k<BLOCK_SIZE;k++){
+				if(buffer[k]<v)
+					v=buffer[k];
+			}
 		}
-
 	}
 	
 	t1 = times(&timing);

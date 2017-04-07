@@ -325,9 +325,9 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 		p += chunk;
 
 
-		/* prefetch 1 block */
-		/*
-		for(unsigned int j=0; j<5 && n > j*BLOCK_SIZE; j++){
+		/* prefetch 5 blocks */
+		
+		for(unsigned int j=1; j<5 && n > j*BLOCK_SIZE; j++){
 
 			blk = block_map(i, off+BLOCK_SIZE*j, 0);
 
@@ -338,7 +338,7 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 
 			brelse(bbuf);
 		}
-		*/
+		
 
 	} while (n > 0);
 
