@@ -333,9 +333,10 @@ PUBLIC struct buffer *bread_a(dev_t dev, block_t num){
 
 	bdev_readblk_a(buf);
 	
+	// à mettre dans atat handler 
 	/* Update buffer flags. */
-	buf->flags |= BUFFER_VALID;
-	buf->flags &= ~BUFFER_DIRTY;
+	/*buf->flags |= BUFFER_VALID;
+	buf->flags &= ~BUFFER_DIRTY;*/
 
 	return (buf);
 }
