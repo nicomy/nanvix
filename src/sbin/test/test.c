@@ -201,8 +201,12 @@ static int aread_test(void)
 	
 	t0 = times(&timing);
 	
+	if(read(fd, buffer, BLOCK_SIZE) != BLOCK_SIZE)
+			exit(EXIT_FAILURE);
+
 	/* Read hdd. */
 	for(int i=0; i<10000;i++){
+
 		if(read(fd, buffer, BLOCK_SIZE) != BLOCK_SIZE)
 			exit(EXIT_FAILURE);
 
