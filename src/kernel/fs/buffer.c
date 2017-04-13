@@ -322,23 +322,37 @@ PUBLIC struct buffer *bread(dev_t dev, block_t num)
 	return (buf);
 }
 
-PUBLIC struct buffer *bread_a(dev_t dev, block_t num){
+/**
+ * @brief Reads a block from a device. and pretech the next block
+ * 
+ * @details Reads the block numbered num synchronously from the device numbered
+ *          dev.
+ * 
+ * @param dev Device number.
+ * @param num Block number.
+ * 
+ * @returns Upon successful completion, a pointer to a buffer holding the
+ *          requested block is returned. In this case, the block buffer is 
+ *          ensured to be locked. Upon failure, a NULL pointer is returned
+ *          instead.
+ * 
+ * @note The device number should be valid.
+ * @note The block number should be valid.
+ */
+
+PUBLIC struct buffer *breada(dev_t dev, block_t num){
 	struct buffer *buf;
 	
 	buf = getblk(dev, num);
-
-		/* Valid buffer? */
+	
+	/* Valid buffer? */
 	if (buf->flags & BUFFER_VALID)
 		return (buf);
 
-	bdev_readblk_a(buf);
+	bdev_readblka(buf);
 	
-	// à mettre dans atat handler 
-	/* Update buffer flags. */
-	/*buf->flags |= BUFFER_VALID;
-	buf->flags &= ~BUFFER_DIRTY;*/
-
 	return (buf);
+	
 }
 
 /**
@@ -424,6 +438,22 @@ PUBLIC void bsync(void)
 PUBLIC inline void buffer_dirty(struct buffer *buf, int set)
 {
 	buf->flags = (set) ? buf->flags | BUFFER_DIRTY : buf->flags & ~BUFFER_DIRTY;
+}
+
+/**
+ * @brief Sets/clears buffer's valid flag.
+ * 
+ * @details If set equals to non-zero, then the valid flag of the buffer pointed
+ *          to by buf is set, otherwise the flag is cleared.
+ * 
+ * @param buf Buffer in which the valid flag shall be set/cleared.
+ * @param set Set valid flag?
+ * 
+ * @note The buffer must be locked.
+ */
+PUBLIC inline void buffer_valid(struct buffer *buf, int set)
+{
+	buf->flags = (set) ? buf->flags | BUFFER_VALID : buf->flags & ~BUFFER_VALID;
 }
 
 /**
