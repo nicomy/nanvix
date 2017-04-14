@@ -146,6 +146,7 @@ static int io_test(void)
 		exit(EXIT_FAILURE);
 	
 	/* Open hdd. */
+	// fd = open("/bin/sbin/Brasil", O_RDONLY);
 	fd = open("/dev/hdd", O_RDONLY);
 	if (fd < 0)
 		exit(EXIT_FAILURE);
@@ -199,34 +200,46 @@ static int aread_test(void)
 		exit(EXIT_FAILURE);
 
 	/* Open hdd. */
-	fd = open("/sbin/testFile", O_RDONLY);
-	if (fd < 0)
-		exit(EXIT_FAILURE);
-
-	t0 = times(&timing);
+	// fd = open("/dev/hdd", O_RDONLY);
+	fd = open("/sbin/Brasil", O_RDONLY);
+	if (fd < 0){
+		printf("\nerror unable to open test file\n");
+		exit(EXIT_FAILURE); 
+	}
 	
-	if(read(fd, buffer, BLOCK_SIZE) != BLOCK_SIZE)
-			exit(EXIT_FAILURE);
+	t0 = times(&timing);
 
-	/* Read file. */
-	while(read(fd, buffer, BLOCK_SIZE) == BLOCK_SIZE) {
 
-		//printf("%s",buffer);
 
-		// int v;
-		// for(int j=0;j<10;j++){
-		// 	v=buffer[0];
-		// 	for(int k=j;k<BLOCK_SIZE;k++){
-		// 		if(buffer[k]<v)
-		// 			v=buffer[k];
-		// 	}
-		// }
+	ssize_t taille_lu = read(fd, buffer, BLOCK_SIZE);
 
-		sleep(1000);
+	if(taille_lu== -1 ){
+		printf("erreur de lecture\n");
+	}
+
+	while(taille_lu > 0 ){
+
+		// printf("%s",buffer);
+		
+		//tri les données lu pour simuler un calcul 
+		int v;
+		for(int j=0;j<10;j++){
+			v=buffer[0];
+			for(int k=j;k<taille_lu;k++){
+				if(buffer[k]<v)
+					v=buffer[k];
+			}
+		}
+
+		taille_lu = read(fd, buffer, BLOCK_SIZE);
+		if(taille_lu== -1 ){
+			printf("erreur de lecture\n");
+		}
 	}
 
 	//printf("%s",buffer);
 
+	
 	
 	t1 = times(&timing);
 	
