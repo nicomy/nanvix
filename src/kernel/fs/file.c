@@ -303,6 +303,7 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 			goto out;
 		
 		bbuf = breada(i->dev, blk);
+		// bbuf = bread(i->dev, blk);
 
 		blkoff = off % BLOCK_SIZE;
 

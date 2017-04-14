@@ -202,31 +202,35 @@ static int aread_test(void)
 		printf("\nerror unable to open test file\n");
 		exit(EXIT_FAILURE); 
 	}
-	else{
-		printf("\nfichier bien ouvert\n");
-	}
 	
 	t0 = times(&timing);
-	
-	if(read(fd, buffer, BLOCK_SIZE) != BLOCK_SIZE)
-			exit(EXIT_FAILURE);
 
-	/* Read hdd. */
-	for(int i=0; i<10000;i++){
-		if(read(fd, buffer, BLOCK_SIZE) != BLOCK_SIZE){
-			printf("erreur de lecture\n");
-			exit(EXIT_FAILURE);
-		}
 
+
+	ssize_t taille_lu = read(fd, buffer, BLOCK_SIZE);
+
+	if(taille_lu== -1 ){
+		printf("erreur de lecture\n");
+	}
+
+	while(taille_lu > 0 ){
+
+		//tri les données lu pour simuler un calcul 
 		int v;
 		for(int j=0;j<10;j++){
 			v=buffer[0];
-			for(int k=j;k<BLOCK_SIZE;k++){
+			for(int k=j;k<taille_lu;k++){
 				if(buffer[k]<v)
 					v=buffer[k];
 			}
 		}
+
+		taille_lu = read(fd, buffer, BLOCK_SIZE);
+		if(taille_lu== -1 ){
+			printf("erreur de lecture\n");
+		}
 	}
+	
 	
 	t1 = times(&timing);
 	
