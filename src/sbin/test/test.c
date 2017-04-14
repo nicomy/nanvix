@@ -181,6 +181,10 @@ static int io_test(void)
  * 
  * @returns Zero if passed on test, and non-zero otherwise.
  */
+
+/* probleme d'import de sleep. */
+int sleep(int x) { time_t t0=times(0); while (( times(0) - t0) < x); return 0; }
+
 static int aread_test(void)
 {
 	int fd;            /* File descriptor.    */
@@ -207,7 +211,7 @@ static int aread_test(void)
 	/* Read file. */
 	while(read(fd, buffer, BLOCK_SIZE) == BLOCK_SIZE) {
 
-		printf("%s",buffer);
+		//printf("%s",buffer);
 
 		// int v;
 		// for(int j=0;j<10;j++){
@@ -218,11 +222,10 @@ static int aread_test(void)
 		// 	}
 		// }
 
-		sleep(4000);
-
+		sleep(1000);
 	}
 
-	printf("%s",buffer);
+	//printf("%s",buffer);
 
 	
 	t1 = times(&timing);

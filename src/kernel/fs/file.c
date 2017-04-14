@@ -277,6 +277,24 @@ PUBLIC int dir_add(struct inode *dinode, struct inode *inode, const char *name)
 	return (0);
 }
 
+/* Used in file_read to pretech up to p blocks */
+void prefetch(struct inode * i, int off){
+
+	block_t blk;         /* Working block number. */
+	struct buffer *bbuf; /* Working block buffer. */
+
+	
+	blk = block_map(i, off+BLOCK_SIZE, 0);
+
+	if(blk != BLOCK_NULL){
+
+		bbuf = breada(i->dev,blk);
+
+		brelse(bbuf);
+
+	}
+}
+
 /*
  * Reads from a regular file.
  */
@@ -291,7 +309,8 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 	p = buf;
 	
 	inode_lock(i);
-	
+
+
 	/* Read data. */
 	do
 	{
@@ -302,7 +321,7 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 		if (blk == BLOCK_NULL)
 			goto out;
 		
-		bbuf = breada(i->dev, blk);
+		bbuf = bread(i->dev, blk);
 
 		blkoff = off % BLOCK_SIZE;
 
@@ -327,19 +346,9 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 		p += chunk;
 
 
-		/* prefetch 1 block */
-		
-		for(unsigned int j=1; j<1 && n > j*BLOCK_SIZE; j++){
+		/* prefetch n block */
 
-			blk = block_map(i, off+BLOCK_SIZE*(j-1), 0);
-
-			if(blk == BLOCK_NULL)
-				goto out;
-				
-			bbuf = breada(i->dev,blk);
-
-			brelse(bbuf);
-		}
+		prefetch(i, off);
 		
 
 	} while (n > 0);

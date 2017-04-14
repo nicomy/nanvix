@@ -101,6 +101,7 @@ PUBLIC ssize_t cdev_write(dev_t dev, const void *buf, size_t n)
  */
 PUBLIC ssize_t cdev_read(dev_t dev, void *buf, size_t n)
 {
+
 	/* Null device. */
 	if (MAJOR(dev) == NULL_MAJOR)
 		return (0);
@@ -237,6 +238,7 @@ PUBLIC ssize_t bdev_write(dev_t dev, const char *buf, size_t n, off_t off)
  */
 PUBLIC ssize_t bdev_read(dev_t dev, char *buf, size_t n, off_t off)
 {
+
 	/* Invalid device. */
 	if (bdevsw[MAJOR(dev)] == NULL)
 		return (-EINVAL);
