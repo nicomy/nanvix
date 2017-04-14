@@ -668,7 +668,7 @@ int main(int argc, char **argv)
 		/* Asynchronous read test*/
 		if(!strcmp(argv[i], "aread"))
 		{
-			printf("Asynchronous read test");
+			printf("Asynchronous read test\n");
 			printf("  Result:            [%s]\n",
 				(!aread_test()) ? "PASSED" : "FAILED");
 		}
