@@ -308,9 +308,8 @@ PUBLIC struct buffer *bread(dev_t dev, block_t num)
 	struct buffer *buf;
 	
 	buf = getblk(dev, num);
-	
-	kprintf("buffer valid : %d", buf->flags & BUFFER_VALID);
 
+	kprintf("buffer valid : %d", buf->flags & BUFFER_VALID);
 	/* Valid buffer? */
 	if (buf->flags & BUFFER_VALID){
 		return (buf);
@@ -347,11 +346,9 @@ PUBLIC struct buffer *breada(dev_t dev, block_t num){
 	struct buffer *buf;
 	
 	buf = getblk(dev, num);
-	
+
+	kprintf("(a) buffer valid : %d", buf->flags & BUFFER_VALID);
 	/* Valid buffer? */
-
-	kprintf("buffer valid : %d", buf->flags & BUFFER_VALID);
-
 	if (buf->flags & BUFFER_VALID)
 		return (buf);
 

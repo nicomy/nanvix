@@ -221,15 +221,17 @@ static int aread_test(void)
 
 		// printf("%s",buffer);
 		
-		//tri les données lu pour simuler un calcul 
-		int v;
-		for(int j=0;j<10;j++){
-			v=buffer[0];
-			for(int k=j;k<taille_lu;k++){
-				if(buffer[k]<v)
-					v=buffer[k];
-			}
-		}
+		// //tri les données lu pour simuler un calcul 
+		// int v;
+		// for(int j=0;j<10;j++){
+		// 	v=buffer[0];
+		// 	for(int k=j;k<taille_lu;k++){
+		// 		if(buffer[k]<v)
+		// 			v=buffer[k];
+		// 	}
+		// }
+
+		sleep(2000);
 
 		taille_lu = read(fd, buffer, BLOCK_SIZE);
 		if(taille_lu== -1 ){

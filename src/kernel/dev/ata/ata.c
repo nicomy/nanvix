@@ -963,18 +963,17 @@ PRIVATE void ata_handler(int atadevid)
 		}
 
 			/* Update buffer flags. */
-
 		if (req->flags & REQ_BUF)
 		{
 			if(!(req->flags & REQ_SYNC)){
+
+				kprintf("async read finished !");
+
 				buffer_dirty(req->u.buffered.buf, 0);
 				buffer_valid(req->u.buffered.buf, 1);
-				//brelse(req->u.buffered.buf);
+				brelse(req->u.buffered.buf);
 			}
 		}
-		
-		// (req->u.buffered.buf->flags) |= BUFFER_VALID;
-		// (req->u.buffered.buf->flags) &= ~BUFFER_DIRTY;
 	}
 	
 	/* Process next operation. */
