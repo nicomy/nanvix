@@ -189,12 +189,12 @@ static int aread_test(void)
 	int BLOCK_SIZE = (1 << 10);
 	clock_t t0, t1;    /* Elapsed times.      */
 	char *buffer;      /* Buffer.             */
-	
+
 	/* Allocate buffer. */
 	buffer = malloc(MEMORY_SIZE);
 	if (buffer == NULL)
 		exit(EXIT_FAILURE);
-	
+
 	/* Open hdd. */
 	// fd = open("/dev/hdd", O_RDONLY);
 	fd = open("/sbin/Brasil", O_RDONLY);
@@ -215,6 +215,8 @@ static int aread_test(void)
 
 	while(taille_lu > 0 ){
 
+		// printf("%s",buffer);
+		
 		//tri les données lu pour simuler un calcul 
 		int v;
 		for(int j=0;j<10;j++){
@@ -230,6 +232,9 @@ static int aread_test(void)
 			printf("erreur de lecture\n");
 		}
 	}
+
+	printf("%s",buffer);
+
 	
 	
 	t1 = times(&timing);
