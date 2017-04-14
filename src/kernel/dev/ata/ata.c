@@ -959,6 +959,8 @@ PRIVATE void ata_handler(int atadevid)
 			word = inputw(pio_ports[bus][ATA_REG_DATA]);
 			buf[i] = word & 0xff;
 			buf[i + 1] = (word >> 8) & 0xff;
+
+
 		}
 
 			/* Update buffer flags. */

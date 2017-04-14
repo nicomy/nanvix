@@ -297,6 +297,7 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 	{
 		blk = block_map(i, off, 0);
 		
+
 		/* End of file reached. */
 		if (blk == BLOCK_NULL)
 			goto out;
@@ -307,6 +308,7 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 
 		/* Calculate read chunk size. */
 		chunk = (n < BLOCK_SIZE - blkoff) ? n : BLOCK_SIZE - blkoff;
+
 		if ((off_t)chunk > i->size - off)
 		{
 			chunk = i->size - off;

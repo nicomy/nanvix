@@ -132,6 +132,7 @@
 		int (*readblk)(unsigned, struct buffer *);            /* Read block.  */
 		int (*readblka)(unsigned, struct buffer *);            /* Read block.  */
 		int (*writeblk)(unsigned, struct buffer *);           /* Write block. */
+		// int (*readblk_a)(unsigned, struct buffer *); 
 	};
 	
 	/*
