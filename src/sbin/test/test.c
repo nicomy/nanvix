@@ -188,37 +188,42 @@ static int aread_test(void)
 	int BLOCK_SIZE = (1 << 10);
 	clock_t t0, t1;    /* Elapsed times.      */
 	char *buffer;      /* Buffer.             */
-	
+
 	/* Allocate buffer. */
 	buffer = malloc(MEMORY_SIZE);
 	if (buffer == NULL)
 		exit(EXIT_FAILURE);
-	
+
 	/* Open hdd. */
-	fd = open("/dev/hdd", O_RDONLY);
+	fd = open("/sbin/testFile", O_RDONLY);
 	if (fd < 0)
 		exit(EXIT_FAILURE);
-	
+
 	t0 = times(&timing);
 	
 	if(read(fd, buffer, BLOCK_SIZE) != BLOCK_SIZE)
 			exit(EXIT_FAILURE);
 
-	/* Read hdd. */
-	for(int i=0; i<10000;i++){
+	/* Read file. */
+	while(read(fd, buffer, BLOCK_SIZE) == BLOCK_SIZE) {
 
-		if(read(fd, buffer, BLOCK_SIZE) != BLOCK_SIZE)
-			exit(EXIT_FAILURE);
+		printf("%s",buffer);
 
-		int v;
-		for(int j=0;j<10;j++){
-			v=buffer[0];
-			for(int k=j;k<BLOCK_SIZE;k++){
-				if(buffer[k]<v)
-					v=buffer[k];
-			}
-		}
+		// int v;
+		// for(int j=0;j<10;j++){
+		// 	v=buffer[0];
+		// 	for(int k=j;k<BLOCK_SIZE;k++){
+		// 		if(buffer[k]<v)
+		// 			v=buffer[k];
+		// 	}
+		// }
+
+		sleep(4000);
+
 	}
+
+	printf("%s",buffer);
+
 	
 	t1 = times(&timing);
 	

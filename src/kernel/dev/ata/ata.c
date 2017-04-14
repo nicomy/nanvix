@@ -680,7 +680,7 @@ PRIVATE int ata_readblka(unsigned minor, buffer_t buf)
 	if (!(dev->flags & ATADEV_VALID))
 		return (-EINVAL);
 	
-	ata_sched_buffered(minor, buf, REQ_BUF | (0 << 2));
+	ata_sched_buffered(minor, buf, REQ_BUF);
 	
 	return (0);
 }
@@ -967,14 +967,15 @@ PRIVATE void ata_handler(int atadevid)
 
 		if (req->flags & REQ_BUF)
 		{
-			buffer_dirty(req->u.buffered.buf, 0);
-			buffer_valid(req->u.buffered.buf, 1);
-			//brelse(req->u.buffered.buf);
+			if(!(req->flags & REQ_SYNC)){
+				buffer_dirty(req->u.buffered.buf, 0);
+				buffer_valid(req->u.buffered.buf, 1);
+				//brelse(req->u.buffered.buf);
+			}
 		}
 		
 		// (req->u.buffered.buf->flags) |= BUFFER_VALID;
 		// (req->u.buffered.buf->flags) &= ~BUFFER_DIRTY;
-		
 	}
 	
 	/* Process next operation. */
