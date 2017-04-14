@@ -66,6 +66,7 @@ nanvix:
 	mkdir -p $(SBINDIR)
 	mkdir -p $(UBINDIR)
 	cd $(SRCDIR) && $(MAKE) all
+	cd $(CURDIR) && cp Brasil $(SBINDIR)/Brasil
 
 # Builds system's image.
 image: $(BINDIR)/kernel tools

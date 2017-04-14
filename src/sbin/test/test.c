@@ -146,6 +146,7 @@ static int io_test(void)
 		exit(EXIT_FAILURE);
 	
 	/* Open hdd. */
+	// fd = open("/bin/sbin/Brasil", O_RDONLY);
 	fd = open("/dev/hdd", O_RDONLY);
 	if (fd < 0)
 		exit(EXIT_FAILURE);
@@ -195,16 +196,26 @@ static int aread_test(void)
 		exit(EXIT_FAILURE);
 	
 	/* Open hdd. */
-	fd = open("/dev/hdd", O_RDONLY);
-	if (fd < 0)
-		exit(EXIT_FAILURE);
+	// fd = open("/dev/hdd", O_RDONLY);
+	fd = open("/sbin/Brasil", O_RDONLY);
+	if (fd < 0){
+		printf("\nerror unable to open test file\n");
+		exit(EXIT_FAILURE); 
+	}
+	else{
+		printf("\nfichier bien ouvert\n");
+	}
 	
 	t0 = times(&timing);
 	
+	block = 
+
 	/* Read hdd. */
 	for(int i=0; i<10000;i++){
-		if(read(fd, buffer, BLOCK_SIZE) != BLOCK_SIZE)
+		if(read(fd, buffer, BLOCK_SIZE) != BLOCK_SIZE){
+			printf("erreur de lecture\n");
 			exit(EXIT_FAILURE);
+		}
 
 		int v;
 		for(int j=0;j<10;j++){
