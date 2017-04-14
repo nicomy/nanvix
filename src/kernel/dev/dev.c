@@ -313,7 +313,7 @@ PUBLIC void bdev_readblka(buffer_t buf)
 		kpanic("reading block from invalid device");
 		
 	/* Operation not supported. */
-	if (bdevsw[MAJOR(dev)]->readblk == NULL)
+	if (bdevsw[MAJOR(dev)]->readblka == NULL)
 		kpanic("block device cannot read blocks");
 	
 	/* Read block. */
