@@ -208,7 +208,8 @@ static int aread_test(void)
 	
 	t0 = times(&timing);
 	
-	block = 
+	if(read(fd, buffer, BLOCK_SIZE) != BLOCK_SIZE)
+			exit(EXIT_FAILURE);
 
 	/* Read hdd. */
 	for(int i=0; i<10000;i++){
@@ -675,7 +676,7 @@ int main(int argc, char **argv)
 		/* Asynchronous read test*/
 		if(!strcmp(argv[i], "aread"))
 		{
-			printf("Asynchronous read test");
+			printf("Asynchronous read test\n");
 			printf("  Result:            [%s]\n",
 				(!aread_test()) ? "PASSED" : "FAILED");
 		}

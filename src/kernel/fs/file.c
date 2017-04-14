@@ -302,7 +302,7 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 		if (blk == BLOCK_NULL)
 			goto out;
 		
-		bbuf = bread(i->dev, blk);
+		bbuf = breada(i->dev, blk);
 
 		blkoff = off % BLOCK_SIZE;
 
@@ -329,17 +329,17 @@ PUBLIC ssize_t file_read(struct inode *i, void *buf, size_t n, off_t off)
 
 		/* prefetch 5 blocks */
 		
-		for(unsigned int j=1; j<5 && n > j*BLOCK_SIZE; j++){
+		// for(unsigned int j=1; j<5 && n > j*BLOCK_SIZE; j++){
 
-			blk = block_map(i, off+BLOCK_SIZE*j, 0);
+		// 	blk = block_map(i, off+BLOCK_SIZE*(j-1), 0);
 
-			if(blk == BLOCK_NULL)
-				goto out;
+		// 	if(blk == BLOCK_NULL)
+		// 		goto out;
 				
-			bbuf = breada(i->dev,blk);
+		// 	bbuf = breada(i->dev,blk);
 
-			brelse(bbuf);
-		}
+		// 	brelse(bbuf);
+		// }
 		
 
 	} while (n > 0);
